@@ -10,32 +10,31 @@ var one sig Root extends AbsNode{}
 var sig Leaf extends AbsNode {}
 var sig Node extends AbsNode {}
 
-// нодов больше одного
+// fact that we have more than one node
 fact
 {
-  always//темпоральный оператор, что всегда в каждом шаге будут задаваться определенные свойства
+  always // hint for me: temporal operator,- certain properties will always be set in each step
   {
     #AbsNode > 1
   }
 }
 
-// множество всех детей
+// set of all the "children"
 fun children: set AbsNode
 {
   AbsNode.(left + right)
 }
 
-// рут не является потомком
+// root has no parents: rot is not a child
 fact
 {
   always
   {
-    //Root not in AbsNode.left + AbsNode.right
     Root not in children
   }
 }
 
-// множество всех родителей
+// set of "parents"
 fun parents: set AbsNode
 {
   (left + right).AbsNode
@@ -47,20 +46,20 @@ fun all_children_of[n: AbsNode]: set AbsNode
 }
 
 /*
-// узлы должны иметь только одного родителя
+// nods should have only one parent
 fun parent_of[n: AbsNode] : set AbsNode
 {
   (left + right).n
-  // left.n + right.n тоже неверно, потому что это будет как объединение множеств
-
+  // left.n + right.n
+  // the string above is incorrect too because it was like joining sets
 }
 */
 
 pred valid
 {
-  // нет циклам!!
+  // say no to circles
   all n: AbsNode | n not in n.all_children_of
-  // слева и справа в сумме один родитель
+  // in total, we have one parent from left and right
   // all n: AbsNode | add[#left.n, #right.n] <= 1
   all n: AbsNode
   {
@@ -87,14 +86,14 @@ fact
     }
   }
 }
-// моделирование операций --------------insert------------
+// operations --------------insert------------
 
 fun all_new_nodes: set AbsNode'
 {
   AbsNode' - AbsNode
 }
-// узел новый
-pred new[n: AbsNode'] // относится к сигнатуре AbsNode, но из будущего момента времени
+// new node
+pred new[n: AbsNode'] // refer to the AbsNode signature but from the next moment of time
 {
   n in all_new_nodes
 }
@@ -104,7 +103,7 @@ pred may_add_children[n: AbsNode]
   no n.left or no n.right
 }
 
-//операция добавления потомка
+// adding child
 pred add_children[n: AbsNode, c: AbsNode']
 {
   c.new
@@ -112,7 +111,7 @@ pred add_children[n: AbsNode, c: AbsNode']
   no n.left implies
   {
     right' = right
-    left' = left + (n -> c) // меняются отношения родитель - потомок
+    left' = left + (n -> c) // changing "parent - child" raltions
   }
   else
   {
@@ -121,12 +120,12 @@ pred add_children[n: AbsNode, c: AbsNode']
   }
 }
 
-// проверяет условия над операцией и проверяет ее
+// checking conditions under operation
 pred add_some_child
 {
   {
     one all_new_nodes
-    some n: AbsNode // такой, что
+    some n: AbsNode // such that
     {
       n.may_add_children
       n.add_children[all_new_nodes]
@@ -140,14 +139,13 @@ pred add_some_child
   }
 }
 
-// проверяем корректность операции
-// валидность до и после
+// check the correctness of the operation
+// validity before and after
 pred valid_and_add_implies_valid
 {
-  // система была валидная, мы что-то добавили
-  // и получили снова валидную систему
+  // system was valid, we added something
+  // and got a valid system again
   valid implies add_some_child
-  // (valid and add_some_child) implies after valid //если валидное состояние, и мы смогли добавить
 }
 
 example: run
