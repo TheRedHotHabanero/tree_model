@@ -30,7 +30,8 @@ fact
 {
   always
   {
-    Root not in AbsNode.left + AbsNode.right
+    //Root not in AbsNode.left + AbsNode.right
+    Root not in children
   }
 }
 
@@ -69,7 +70,8 @@ pred valid
   }
 }
 
-fact{
+fact
+{
   always
   {
     Root not in children
