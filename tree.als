@@ -45,19 +45,9 @@ fun all_children_of[n: AbsNode]: set AbsNode
   n.^(left + right)
 }
 
-/*
-// nods should have only one parent
-fun parent_of[n: AbsNode] : set AbsNode
-{
-  (left + right).n
-  // left.n + right.n
-  // the string above is incorrect too because it was like joining sets
-}
-*/
-
 pred valid
 {
-  // say no to circles
+  // say no to loops
   all n: AbsNode | n not in n.all_children_of
   // in total, we have one parent from left and right
   // all n: AbsNode | add[#left.n, #right.n] <= 1
